@@ -28,7 +28,9 @@ public class MainActivity extends AppCompatActivity {
 
         GetdataService service = RetrofitInstance.getRetrofitInstance().create(GetdataService.class);
 
-        Call<List<Pokemon>> call = service.getPokemons();
+        //Starting from
+
+       /* Call<List<Pokemon>> call = service.getPokemons();
 
         call.enqueue(new Callback<List<Pokemon>>() {
             @Override
@@ -44,13 +46,41 @@ public class MainActivity extends AppCompatActivity {
 
                 Toast.makeText(getApplicationContext(),"Something went wrong",Toast.LENGTH_SHORT).show();
             }
+        });*/
+       //Starting from json object
+
+        Call<PokemonPojo> call = service.getPokemonsobj();
+        call.enqueue(new Callback<PokemonPojo>() {
+            @Override
+            public void onResponse(Call<PokemonPojo> call, Response<PokemonPojo> response) {
+                ArrayList<Pokemon> pokarry = new ArrayList<>();
+                PokemonPojo pokemonPojo =  response.body();
+
+                try{
+
+                    pokarry = new ArrayList<>(pokemonPojo.getPokemon());
+                    genrateData(pokarry);
+
+                }catch (NullPointerException e){
+
+                    System.out.println(e.getMessage());
+
+                }
+
+            }
+
+            @Override
+            public void onFailure(Call<PokemonPojo> call, Throwable t) {
+                Toast.makeText(getApplicationContext(),"Something went wrong",Toast.LENGTH_SHORT).show();
+            }
         });
+
     }
 
-    public void genrateData(List<Pokemon> pokemonList){
+    public void genrateData(ArrayList<Pokemon> pokes/*List<Pokemon> pokemonList*/){
 
         @SuppressLint("WrongConstant") LinearLayoutManager manager = new LinearLayoutManager(getApplicationContext(),LinearLayoutManager.VERTICAL,false);
-        ArrayList<Pokemon> pokes = (ArrayList<Pokemon>) pokemonList;
+       // ArrayList<Pokemon> pokes = (ArrayList<Pokemon>) pokemonList;
         recyadapter = new Recyadapter(pokes,getApplicationContext());
         RecyclerView recyclerView = findViewById(R.id.recycle_poke);
         recyclerView.setLayoutManager(manager);
